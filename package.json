@@ -1,0 +1,42 @@
+{
+  "name": "anodine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'Error: no test specified' && exit 1",
+    "refresh": "rm -rf node_modules/ && npm i && npm dedupe",
+    "prepare": "husky install",
+    "format": "prettier --write .",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Dwain Robinson",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.17.2",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/register": "^7.17.0",
+    "compression": "^1.7.4",
+    "core-js": "^3.21.0",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^6.14.0",
+    "helmet": "^5.0.2",
+    "mongoose-sequence": "^5.3.1",
+    "nanoid": "^3.3.4",
+    "nocache": "^4.0.0",
+    "regenerator-runtime": "^0.13.9",
+    "response-time": "^2.3.2",
+    "express": "^4.21.1",
+    "mongoose": "^8.8.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0",
+    "husky": "^7.0.4",
+    "nodemon": "^1.4.1",
+    "prettier": "^2.5.1",
+    "prettier-plugin-organize-imports": "^3.2.4"
+  }
+}
