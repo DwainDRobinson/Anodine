@@ -59,7 +59,6 @@ userSchema.pre('save', function (next) {
 
   //Hash password only if the password has been changed or is new
   if (!user.isModified('password')) return next();
-
   user.password = getHashedPassword(user.password);
   next();
 });
