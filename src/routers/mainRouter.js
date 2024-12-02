@@ -3,7 +3,7 @@
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import config from '../config';
-import { validateToken } from '../middlewares';
+import { validateAuthorizationTokenHandler } from '../middlewares';
 import { fancyTimeFormat } from '../utilities/time';
 
 const { Router } = express;
@@ -26,9 +26,11 @@ router.get('/probeCheck', (_, res) => {
   });
 });
 
-router.get('/ip', validateToken, (req, res) => res.send(req.ip));
+router.get('/ip', validateAuthorizationTokenHandler, (req, res) =>
+  res.send(req.ip)
+);
 
-router.get('/getConfiguration', validateToken, (_, res) => {
+router.get('/getConfiguration', validateAuthorizationTokenHandler, (_, res) => {
   res.status(StatusCodes.OK).send(config);
 });
 

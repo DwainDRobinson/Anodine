@@ -1,6 +1,6 @@
 'use strict';
 
-import appRouter from './appRouter';
+import mainRouter from './mainRouter';
 import notFoundRouter from './notFoundRouter';
 
-export { appRouter, notFoundRouter };
+export { mainRouter, notFoundRouter };

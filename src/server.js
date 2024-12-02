@@ -9,9 +9,10 @@ import noCache from 'nocache';
 import responseTime from 'response-time';
 
 import config from './config';
+import { BASE_URL } from './constants';
 import logger from './logger';
-import { errorHandler, requestResponse } from './middlewares';
-import { notFoundRouter } from './routers';
+import { errorHandler, requestResponseHandler } from './middlewares';
+import { mainRouter, notFoundRouter } from './routers';
 
 const { TRUST_PROXY } = config;
 
@@ -32,7 +33,6 @@ server.use(
   })
 );
 
-//Reducing fingerprinting
 server.disable('x-powered-by');
 logger.info('Loaded helmet middleware.');
 
@@ -58,8 +58,11 @@ server.use(errorHandler);
 logger.info('Loaded error handler middleware.');
 
 //route middleware with request/response
-server.use(requestResponse);
+server.use(requestResponseHandler);
 logger.info('Loaded request/response middleware.');
+
+server.use(BASE_URL, mainRouter);
+logger.info('Loaded main routes middleware.');
 
 server.use(notFoundRouter);
 logger.info('Loaded not found routes middleware.');
