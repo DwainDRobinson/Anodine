@@ -13,7 +13,7 @@ const basename = path.basename(__filename);
 
 const models = {};
 
-const { clusterDomain } = config.sources.database;
+const { CLUSTER_DOMAIN } = config.sources.database;
 
 /**
  * Set event listener to mongoose.connection on error
@@ -26,7 +26,7 @@ mongoose.connection.on('error', error => {
  * Set event listener to mongoose.connection on open
  */
 mongoose.connection.on('open', () => {
-  logger.info(`Connected to ${clusterDomain}....`);
+  logger.info(`Connected to ${CLUSTER_DOMAIN}....`);
 });
 
 /**

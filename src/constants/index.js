@@ -1,6 +1,10 @@
 'use strict';
 
-export const BASE_URL = '/anodine-service';
+import config from '../config';
+
+const { APP_NAME } = config;
+
+export const BASE_URL = `/${APP_NAME}-service`;
 
 export const STATES = [
   'AL',
@@ -64,6 +68,6 @@ export const STATES = [
   'WY'
 ];
 
-export const WINDOW_MS = 10 * 60 * 1000 * 4; // 60 minutes
+export const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
 export const TOKEN_EXPIRY = 60;

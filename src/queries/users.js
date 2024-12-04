@@ -7,57 +7,39 @@ import { convertArgToBoolean } from '../utilities/boolean';
 export const getUsers = async query => {
   try {
     const { User } = models;
-    const page = +query.page;
-    const limit = +query.limit;
-    const skipIndex = (page - 1) * limit;
+    const {
+      page = 1,
+      limit = 10,
+      sort = 'createdAt',
+      order = 'desc',
+      ...filters
+    } = query;
 
-    const filter = [];
-    for (const [key, value] of Object.entries(query)) {
-      if (
-        key != 'page' &&
-        key != 'limit' &&
-        key != 'sort' &&
-        key != 'isAdmin' &&
-        key != 'userId'
-      ) {
-        filter.push({ [key]: { $regex: value, $options: 'i' } });
-      }
-      if (key == 'isAdmin' || key == 'userId') {
-        filter.push({ [key]: value });
-      }
-    }
+    // Build filter query
+    const search = {};
+    Object.keys(filters).forEach(key => {
+      search[key] = new RegExp(filters[key], 'i'); // Regex for partial match (case-insensitive)
+    });
 
-    let objectFilter = {};
-    if (filter.length > 0) {
-      objectFilter = {
-        $and: filter
-      };
-    }
+    const options = {
+      skip: (page - 1) * limit,
+      limit: parseInt(limit),
+      sort: { [sort]: order === 'asc' ? 1 : -1 }
+    };
 
-    let sortString = '-id';
+    // Fetch data and count total documents
+    const [users, total] = await Promise.all([
+      User.find(search, null, options),
+      User.countDocuments(search)
+    ]);
 
-    if (query.sort) {
-      sortString = query.sort;
-    }
-
-    const users = await User.find(objectFilter)
-      .limit(limit)
-      .skip(skipIndex)
-      .sort(sortString)
-      .lean()
-      .exec();
-    const total = await User.find(objectFilter).count();
-    const result = users.map(user => ({
-      ...user,
-      total,
-      pages: Math.ceil(total / limit)
-    }));
-    if (result) {
-      return [null, result];
+    if (users) {
+      return [null, { users, total }];
     }
     return [new Error('No users found with selected query params')];
   } catch (err) {
     logger.error('Error getting user data from db: ', err);
+    return [new Error('Error getting user data from db')];
   }
 };
 

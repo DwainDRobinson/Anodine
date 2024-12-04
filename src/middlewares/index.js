@@ -1,7 +1,7 @@
 'use strict';
 
 import rateLimit from 'express-rate-limit';
-import { StatusCodes } from 'http-status-codes';
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import { WINDOW_MS } from '../constants';
 import logger from '../logger';
 import { getUserByEmail } from '../queries/users';
@@ -23,10 +23,10 @@ const requestResponseHandler = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  err && logger.error('Error: ', err);
+  err && logger.error(`Error: ${err.stack}`);
   return res
     .status(err.status || StatusCodes.INTERNAL_SERVER_ERROR)
-    .send(err.message);
+    .json({ error: err.message || ReasonPhrases.INTERNAL_SERVER_ERROR });
 };
 
 const rateLimitHandler = rateLimit({
@@ -34,8 +34,7 @@ const rateLimitHandler = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  message:
-    'Too many calls made from this specific IP, please try again after an hour'
+  message: 'Too many calls made from this specific IP, please try again later'
 });
 
 const validationHandler = (req, res, next) => {
@@ -57,6 +56,7 @@ const validateAuthorizationTokenHandler = async (req, res, next) => {
     return res.status(statusCode).send(response);
   }
 
+  //Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MD......
   const tokenParts = authorizationHeader.split(' ');
 
   if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
@@ -67,7 +67,6 @@ const validateAuthorizationTokenHandler = async (req, res, next) => {
   }
 
   try {
-    //Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MD......
     const token = tokenParts[1];
 
     const result = verifyJWTToken(token);

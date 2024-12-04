@@ -3,11 +3,11 @@
 import config from './config';
 import logger from './logger';
 import models from './models';
-import generateDBUri from './queries';
+import getDatabaseConnectionString from './queries';
 import server from './server';
 
 /**
- * Convert server port to number
+ * Convert server port string to number
  */
 const normalizePort = val => {
   const port = parseInt(val, 10);
@@ -29,10 +29,10 @@ const normalizePort = val => {
  * Connects to database
  */
 const initializeDBConnection = () => {
-  const { options } = config.sources.database;
   const { source } = models;
+  const { options } = config.sources.database;
   try {
-    source.connect(generateDBUri(), options);
+    source.connect(getDatabaseConnectionString(), options);
   } catch (e) {
     logger.error(`Error connecting to db: ${e}`);
     throw e;
@@ -42,7 +42,7 @@ const initializeDBConnection = () => {
 /**
  * Starts web server
  */
-const initializeServer = () => {
+const startServer = () => {
   const { PORT, HOST } = config;
   try {
     server.listen(normalizePort(PORT), HOST);
@@ -56,39 +56,49 @@ const initializeServer = () => {
 /**
  * Start web application
  */
-const bootstrapApp = async () => {
-  logger.info('Starting app...');
+const runApplication = async () => {
+  const { APP_NAME } = config;
+  logger.info(`Starting ${APP_NAME} app...`);
   initializeDBConnection();
-  initializeServer();
+  startServer();
 };
 
-bootstrapApp().catch(err => {
-  logger.error(`Error starting application: ${err.stack}`);
+runApplication().catch(err => {
+  logger.error(`Error starting application: ${err.message}`);
 });
 
-const gracefulExit = () => {
+const closeDatabaseConnections = async () => {
   /**
    * Close connection to db
    */
-  logger.info('Disconnecting from database and shutting down application.');
   const { source } = models;
-  source
-    .disconnect()
-    .then(() => {
-      process.exit(0);
-    })
-    .catch(() => {
-      process.exit(1);
-    });
+  await source.disconnect();
+};
+
+const gracefulExit = () => {
+  logger.info('Shutting down application.');
+  closeDatabaseConnections().then(() => {
+    process.exit(0);
+  });
 };
 
 process
   .on('unhandledRejection', reason => {
+    console.error(reason, 'Unhandled Rejection at Promise', p);
     logger.error(`Unhandled rejection, reason: ${reason.stack} `);
   })
   .on('uncaughtException', err => {
-    logger.error(`Uncaught exception thrown: ${JSON.stringify(err.stack)}`);
-    process.exit(1);
+    console.error(
+      new Date().toUTCString() + ' uncaughtException:',
+      err.message
+    );
+    logger.error(`Uncaught exception thrown: ${err.message}`);
+    logger.info(
+      'Disconnecting from database and shutting down application from uncaughtException.'
+    );
+    closeDatabaseConnections().then(() => {
+      process.exit(1);
+    });
   })
   .on('SIGINT', gracefulExit)
   .on('SIGTERM', gracefulExit);
