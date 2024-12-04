@@ -25,6 +25,21 @@ const normalizePort = val => {
   return false;
 };
 
+const closeDatabaseConnections = () => {
+  /**
+   * Close connection to db
+   */
+  const { source } = models;
+  return source.disconnect();
+};
+
+const gracefulExit = () => {
+  logger.info('Shutting down application.');
+  closeDatabaseConnections().then(() => {
+    process.exit(0);
+  });
+};
+
 /**
  * Connects to database
  */
@@ -66,21 +81,6 @@ const runApplication = async () => {
 runApplication().catch(err => {
   logger.error(`Error starting application: ${err.message}`);
 });
-
-const closeDatabaseConnections = async () => {
-  /**
-   * Close connection to db
-   */
-  const { source } = models;
-  await source.disconnect();
-};
-
-const gracefulExit = () => {
-  logger.info('Shutting down application.');
-  closeDatabaseConnections().then(() => {
-    process.exit(0);
-  });
-};
 
 process
   .on('unhandledRejection', reason => {
