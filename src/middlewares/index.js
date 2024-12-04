@@ -6,7 +6,10 @@ import { WINDOW_MS } from '../constants';
 import logger from '../logger';
 import { getUserByEmail } from '../queries/users';
 import { forbiddenRequest, unauthorizedRequest } from '../response-codes';
-import { isDevelopmentEnvironment } from '../utilities/boolean';
+import {
+  isDevelopmentEnvironment,
+  isProductionEnvironment
+} from '../utilities/boolean';
 import { verifyJWTToken } from '../utilities/token';
 import { errorFormatter, validationResult } from '../validations';
 
@@ -24,9 +27,11 @@ const requestResponseHandler = (req, res, next) => {
 
 const errorHandler = (err, req, res, next) => {
   err && logger.error(`Error: ${err.stack}`);
-  return res
-    .status(err.status || StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ error: err.message || ReasonPhrases.INTERNAL_SERVER_ERROR });
+  return res.status(err.status || StatusCodes.INTERNAL_SERVER_ERROR).json({
+    error: isProductionEnvironment()
+      ? ReasonPhrases.INTERNAL_SERVER_ERROR
+      : err.message
+  });
 };
 
 const rateLimitHandler = rateLimit({
