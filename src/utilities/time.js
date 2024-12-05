@@ -1,5 +1,7 @@
 'use strict';
 
+import moment from 'moment';
+
 export const fancyTimeFormat = duration => {
   // Hours, minutes and seconds
   const hrs = ~~(duration / 3600);
@@ -16,4 +18,8 @@ export const fancyTimeFormat = duration => {
   ret += '' + mins + ':' + (secs < 10 ? '0' : '');
   ret += '' + secs;
   return ret;
+};
+
+export const getCurrentUTCTimestampFormatted = () => {
+  return moment().utc().format('YYYY-MM-DD HH:mm:ss');
 };
