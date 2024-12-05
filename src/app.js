@@ -1,13 +1,12 @@
 'use strict';
 
 import config from './config';
-import {
+import source, {
   closeDatabaseConnections,
   getDatabaseConnectionString,
   gracefulExit
 } from './database';
 import logger from './logger';
-import models from './models';
 import server from './server';
 import { getCurrentUTCTimestampFormatted } from './utilities/time';
 
@@ -33,7 +32,6 @@ const normalizePort = val => {
  * Connects to database
  */
 const initializeDBConnection = () => {
-  const { source } = models;
   const { options } = config.sources.database;
   try {
     source.connect(getDatabaseConnectionString(), options);
@@ -72,7 +70,7 @@ runApplication().catch(err => {
 });
 
 process
-  .on('unhandledRejection', reason => {
+  .on('unhandledRejection', (reason, p) => {
     console.error(reason, 'Unhandled Rejection at Promise', p);
     logger.error(`Unhandled rejection, reason: ${reason.stack} `);
   })
