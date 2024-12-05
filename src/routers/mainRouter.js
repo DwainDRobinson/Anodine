@@ -1,8 +1,8 @@
 'use strict';
 
 import express from 'express';
-import { StatusCodes } from 'http-status-codes';
 import config from '../config';
+import { HttpStatusCodes } from '../constants';
 import { validateAuthorizationTokenHandler } from '../middlewares';
 import { capitalizeFirstLetter } from '../utilities/strings';
 import { fancyTimeFormat } from '../utilities/time';
@@ -15,7 +15,7 @@ const { APP_NAME } = config;
 const router = Router();
 
 router.get('/', (_, res) => {
-  res.status(StatusCodes.OK).send({
+  res.status(HttpStatusCodes.OK).send({
     message: `Welcome to ${capitalizeFirstLetter(
       APP_NAME
     )} Service Manager Service!`
@@ -23,7 +23,7 @@ router.get('/', (_, res) => {
 });
 
 router.get('/probeCheck', (_, res) => {
-  res.status(StatusCodes.OK).send({
+  res.status(HttpStatusCodes.OK).send({
     uptime: fancyTimeFormat(process.uptime()),
     date: new Date(),
     message: `${capitalizeFirstLetter(
@@ -38,7 +38,7 @@ router.get('/ip', validateAuthorizationTokenHandler, (req, res) =>
 );
 
 router.get('/getConfiguration', validateAuthorizationTokenHandler, (_, res) => {
-  res.status(StatusCodes.OK).send(config);
+  res.status(HttpStatusCodes.OK).send(config);
 });
 
 export default router;

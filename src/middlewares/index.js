@@ -1,8 +1,7 @@
 'use strict';
 
 import rateLimit from 'express-rate-limit';
-import { ReasonPhrases, StatusCodes } from 'http-status-codes';
-import { WINDOW_MS } from '../constants';
+import { HttpStatusCodes, WINDOW_MS, getStatusMessage } from '../constants';
 import logger from '../logger';
 import { getUserByEmail } from '../queries/users';
 import { forbiddenRequest, unauthorizedRequest } from '../response-codes';
@@ -27,9 +26,9 @@ const requestResponseHandler = (req, res, next) => {
 
 const errorHandler = (err, req, res, next) => {
   err && logger.error(`Error: ${err.stack}`);
-  return res.status(err.status || StatusCodes.INTERNAL_SERVER_ERROR).json({
+  return res.status(err.status || HttpStatusCodes.INTERNAL_SERVER_ERROR).json({
     error: isProductionEnvironment()
-      ? ReasonPhrases.INTERNAL_SERVER_ERROR
+      ? getStatusMessage(HttpStatusCodes.INTERNAL_SERVER_ERROR)
       : err.message
   });
 };
@@ -45,7 +44,9 @@ const rateLimitHandler = rateLimit({
 const validationHandler = (req, res, next) => {
   const errors = validationResult(req).formatWith(errorFormatter);
   if (!errors.isEmpty()) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array() });
+    return res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ errors: errors.array() });
   }
   next();
 };
