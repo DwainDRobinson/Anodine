@@ -1,6 +1,6 @@
 # Anodine
 
-Microservice template to building REST APIs using express.js
+Microservice template to building REST APIs using Express JS.
 
 # Requirements
 
