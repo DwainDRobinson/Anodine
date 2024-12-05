@@ -101,6 +101,11 @@ userSchema.set('autoCreate', !isProductionEnvironment());
 userSchema.plugin(autoIncrement, { inc_field: 'userId' });
 
 /**
+ * Creates index in database for userId
+ */
+userSchema.index({ userId: 1 });
+
+/**
  * Create User model out of userSchema
  */
 const User = model('User', userSchema);
