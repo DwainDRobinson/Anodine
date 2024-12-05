@@ -1,14 +1,14 @@
 'use strict';
 
-import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { getStatusMessage, HttpStatusCodes } from '../constants';
 
 export const badRequest = message => {
   return [
-    StatusCodes.BAD_REQUEST,
+    HttpStatusCodes.BAD_REQUEST,
     {
       errors: [
         {
-          value: ReasonPhrases.BAD_REQUEST,
+          value: getStatusMessage(HttpStatusCodes.BAD_REQUEST),
           msg: message
         }
       ]
@@ -18,11 +18,11 @@ export const badRequest = message => {
 
 export const unauthorizedRequest = message => {
   return [
-    StatusCodes.UNAUTHORIZED,
+    HttpStatusCodes.UNAUTHORIZED,
     {
       errors: [
         {
-          value: ReasonPhrases.UNAUTHORIZED,
+          value: getStatusMessage(HttpStatusCodes.UNAUTHORIZED),
           msg: message
         }
       ]
@@ -32,11 +32,11 @@ export const unauthorizedRequest = message => {
 
 export const forbiddenRequest = message => {
   return [
-    StatusCodes.FORBIDDEN,
+    HttpStatusCodes.FORBIDDEN,
     {
       errors: [
         {
-          value: ReasonPhrases.FORBIDDEN,
+          value: getStatusMessage(HttpStatusCodes.FORBIDDEN),
           msg: message
         }
       ]
@@ -46,11 +46,11 @@ export const forbiddenRequest = message => {
 
 export const notFoundRequest = message => {
   return [
-    StatusCodes.NOT_FOUND,
+    HttpStatusCodes.NOT_FOUND,
     {
       errors: [
         {
-          value: ReasonPhrases.NOT_FOUND,
+          value: getStatusMessage(HttpStatusCodes.NOT_FOUND),
           msg: message
         }
       ]
@@ -60,11 +60,11 @@ export const notFoundRequest = message => {
 
 export const internalServerErrorRequest = message => {
   return [
-    StatusCodes.INTERNAL_SERVER_ERROR,
+    HttpStatusCodes.INTERNAL_SERVER_ERROR,
     {
       errors: [
         {
-          value: ReasonPhrases.INTERNAL_SERVER_ERROR,
+          value: getStatusMessage(HttpStatusCodes.INTERNAL_SERVER_ERROR),
           msg: message
         }
       ]
